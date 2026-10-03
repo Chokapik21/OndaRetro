@@ -2,5 +2,5 @@
 from pydantic import BaseModel
 
 class EntityOndaRetro(BaseModel):
-    IdOndaRetro: int
-    NombreOndaRetro: str
+    id_onda_retro: int
+    nombre_onda_retro: str
