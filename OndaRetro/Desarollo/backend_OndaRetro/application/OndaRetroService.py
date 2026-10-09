@@ -1,4 +1,4 @@
-from domain.entityOndaRetro import EntityOndaRetro
+from domain.entityOndaRetro import EntityOndaRetroCreate
 from infrastructure.memoryRepository import MemoryRepository
 
 
@@ -10,8 +10,9 @@ class OndaRetroService:
     def consultar(self):
         datos = self.repository.get_all()
         return {
-            "operacion": "Consulta realizada",
-            "payload": datos
+            "success": True,
+            "message": "Consulta realizada correctamente",
+            "data": datos
         }
 
     def consultar_por_id(self, id_onda_retro: int):
@@ -19,43 +20,43 @@ class OndaRetroService:
 
         if onda_retro is None:
             return {
-                "operacion": "Consulta realizada",
-                "mensaje": "Registro de Onda Retro no encontrado",
-                "payload": None
+                "success": False,
+                "message": "Registro de Onda Retro no encontrado",
+                "data": None
             }
 
         return {
-            "operacion": "Consulta realizada",
-            "payload": onda_retro  # Corregido: antes decía 'libreria'
+            "success": True,
+            "message": "Consulta realizada correctamente",
+            "data": onda_retro
         }
 
-    def ingresar(self, onda_retro: EntityOndaRetro):
+    def ingresar(self, onda_retro: EntityOndaRetroCreate):
         resultado = self.repository.create(onda_retro)
         return {
-            "operacion": "Ingreso realizado",
-            "payload": resultado
+            "success": True,
+            "message": "Registro creado correctamente",
+            "data": resultado
         }
 
     def modificar(
         self,
         id_onda_retro: int,
-        onda_retro: EntityOndaRetro
+        onda_retro: EntityOndaRetroCreate
     ):
-        resultado = self.repository.update(
-            id_onda_retro,
-            onda_retro
-        )
+        resultado = self.repository.update(id_onda_retro, onda_retro)
 
         if resultado is None:
             return {
-                "operacion": "Modificación realizada",
-                "mensaje": "Registro de Onda Retro no encontrado",
-                "payload": None
+                "success": False,
+                "message": "Registro de Onda Retro no encontrado",
+                "data": None
             }
 
         return {
-            "operacion": "Modificación realizada",
-            "payload": resultado
+            "success": True,
+            "message": "Registro modificado correctamente",
+            "data": resultado
         }
 
     def eliminar(self, id_onda_retro: int):
@@ -63,12 +64,13 @@ class OndaRetroService:
 
         if resultado is None:
             return {
-                "operacion": "Eliminación realizada",
-                "mensaje": "Registro de Onda Retro no encontrado",
-                "payload": None
+                "success": False,
+                "message": "Registro de Onda Retro no encontrado",
+                "data": None
             }
 
         return {
-            "operacion": "Eliminación realizada",
-            "payload": resultado
+            "success": True,
+            "message": "Registro eliminado correctamente",
+            "data": resultado
         }

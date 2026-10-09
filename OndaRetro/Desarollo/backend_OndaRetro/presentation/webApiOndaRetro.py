@@ -1,6 +1,8 @@
 # WebApiOndaRetro.py
-from fastapi import FastAPI
-from domain.entityOndaRetro import EntityOndaRetro
+from fastapi import FastAPI, HTTPException, status
+
+from domain.entityOndaRetro import EntityOndaRetroCreate
+from application.OndaRetroService import OndaRetroService
 
 
 app = FastAPI(
@@ -9,20 +11,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# service = OndaRetroService()
-
-
-@app.get(
-    "/",
-    summary="Consultar",
-    description="Consultar",
-    tags=["OndaRetro"]
-)
-async def inicio():
-    return {
-        "mensaje": "API OndaRetro IUPB funcionando"
-    }
-
+service = OndaRetroService()
 
 # --------------------------------
 # GET - Consulta
@@ -35,8 +24,7 @@ async def inicio():
     tags=["OndaRetro"]
 )
 async def consultar():
-    return []
-    # return service.consultar()
+    return service.consultar()
 
 
 # --------------------------------
@@ -45,13 +33,20 @@ async def consultar():
 
 @app.get(
     "/api/OndaRetro/{id_onda_retro}",
-    summary="Consultar Tiendas Una",
+    summary="Consultar Una",
     description="Consultar por id",
     tags=["OndaRetro"]
 )
 async def consultar_por_id(id_onda_retro: int):
-    return {"id_onda_retro": id_onda_retro}
-    # return service.consultar_por_id(id_onda_retro)
+    resultado = service.consultar_por_id(id_onda_retro)
+
+    if not resultado["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=resultado["message"]
+        )
+
+    return resultado
 
 
 # --------------------------------
@@ -62,11 +57,11 @@ async def consultar_por_id(id_onda_retro: int):
     "/api/OndaRetro",
     summary="Ingresar",
     description="Ingresar",
-    tags=["OndaRetro"]
+    tags=["OndaRetro"],
+    status_code=status.HTTP_201_CREATED
 )
-async def ingresar(onda_retro: EntityOndaRetro):
-    return onda_retro
-    # return service.ingresar(onda_retro)
+async def ingresar(onda_retro: EntityOndaRetroCreate):
+    return service.ingresar(onda_retro)
 
 
 # --------------------------------
@@ -81,10 +76,17 @@ async def ingresar(onda_retro: EntityOndaRetro):
 )
 async def modificar(
     id_onda_retro: int,
-    onda_retro: EntityOndaRetro
+    onda_retro: EntityOndaRetroCreate
 ):
-    return {"id_onda_retro": id_onda_retro, "datos": onda_retro}
-    # return service.modificar(id_onda_retro, onda_retro)
+    resultado = service.modificar(id_onda_retro, onda_retro)
+
+    if not resultado["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=resultado["message"]
+        )
+
+    return resultado
 
 
 # --------------------------------
@@ -98,5 +100,12 @@ async def modificar(
     tags=["OndaRetro"]
 )
 async def eliminar(id_onda_retro: int):
-    return {"mensaje": f"Registro {id_onda_retro} eliminado"}
-    # return service.eliminar(id_onda_retro)
+    resultado = service.eliminar(id_onda_retro)
+
+    if not resultado["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=resultado["message"]
+        )
+
+    return resultado
