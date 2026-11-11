@@ -1,9 +1,8 @@
-# WebApiOndaRetro.py
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from domain.entityOndaRetro import EntityOndaRetroCreate
 from application.OndaRetroService import OndaRetroService
-
 
 app = FastAPI(
     title="API OndaRetro IUPB",
@@ -11,16 +10,33 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# 1. PERMITIR EL PUERTO 3000 Y OTROS ORIGENES LOCALES
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 service = OndaRetroService()
 
-# --------------------------------
-# GET - Consulta
-# --------------------------------
+# 2. ENDPOINT RAÍZ PARA VERIFICACIÓN DE ESTADO (checkHealth)
+@app.get("/", summary="Estado API")
+async def root():
+    return {"status": "online", "message": "Backend API activa"}
 
+# --------------------------------
+# GET - Consulta Todas
+# --------------------------------
 @app.get(
     "/api/OndaRetro",
     summary="Consultar Todas",
-    description="Consultar Todas",
     tags=["OndaRetro"]
 )
 async def consultar():
@@ -30,7 +46,6 @@ async def consultar():
 # --------------------------------
 # GET ONE - Consulta por ID
 # --------------------------------
-
 @app.get(
     "/api/OndaRetro/{id_onda_retro}",
     summary="Consultar Una",
@@ -52,7 +67,6 @@ async def consultar_por_id(id_onda_retro: int):
 # --------------------------------
 # POST - Ingreso
 # --------------------------------
-
 @app.post(
     "/api/OndaRetro",
     summary="Ingresar",
@@ -67,7 +81,6 @@ async def ingresar(onda_retro: EntityOndaRetroCreate):
 # --------------------------------
 # PUT - Modificación
 # --------------------------------
-
 @app.put(
     "/api/OndaRetro/{id_onda_retro}",
     summary="Modificar",
@@ -92,7 +105,6 @@ async def modificar(
 # --------------------------------
 # DELETE - Eliminación
 # --------------------------------
-
 @app.delete(
     "/api/OndaRetro/{id_onda_retro}",
     summary="Eliminar OndaRetro",
